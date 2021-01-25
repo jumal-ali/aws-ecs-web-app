@@ -10,7 +10,7 @@ executors:
     environment:
       IMAGE_NAME: jumal/superawesome-web-app
     docker:
-      - image: docker:17.05.0-ce-git
+      - image: cimg/base:2020.01
 
 commands:
   load-cached-image:
