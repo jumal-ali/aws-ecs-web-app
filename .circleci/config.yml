@@ -10,7 +10,7 @@ executors:
     environment:
       IMAGE_NAME: jumal/superawesome-web-app
     docker:
-      - image: circleci/buildpack-deps:stable-dind
+      - image: docker:17.05.0-ce-git
 
 commands:
   load-cached-image:
