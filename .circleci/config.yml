@@ -103,7 +103,7 @@ workflows:
       - test:
           requires:
             - build_image
-      - local_image_scan
+      - local_image_scan:
           requires:
             - build_image
       - publish_image:
