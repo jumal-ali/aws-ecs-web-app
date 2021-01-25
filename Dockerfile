@@ -17,7 +17,7 @@ RUN apk add --no-cache tini
 
 WORKDIR /app
 
-RUN addgroup -S www && adduser -S www -G www 
+RUN addgroup -S www && adduser -S www -G www
 COPY --chown=www:www --from=dependencies /build/node_modules /app/node_modules
 COPY --chown=www:www /src .
 USER www
