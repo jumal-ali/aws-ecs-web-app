@@ -2,7 +2,6 @@ version: 2.1
 
 # Setting up dependencies for use by the jobs in this project
 orbs:
-  anchore-engine: anchore/anchore-engine@1.8.3
   docker: circleci/docker@1.5.0
 
 executors:
@@ -59,15 +58,6 @@ jobs:
                 apk add curl --no-cache > /dev/null; 
                 curl -s -o /dev/null -w '%{http_code}' localhost:3000")
             [ $STATUS_CODE = 200 ] || exit 100
-  scan_image:
-    executor: anchore/anchore_engine
-    steps:
-      - setup_remote_docker
-      - load-cached-image
-      - anchore/analyze_local_image:
-          image_name: $IMAGE_NAME:$CIRCLE_BRANCH
-          timeout: '500'
-          analysis_fail: True
   register_image:
     executor: docker-executor
     steps:
@@ -103,13 +93,9 @@ workflows:
       - test:
           requires:
             - build
-      - scan_image
-          requires:
-            - build
       - register_image:
           requires:
             - test
-            - scan_image
       - deploy:
           requires:
             - register_image
