@@ -81,7 +81,9 @@ jobs:
               docker tag $IMAGE_NAME:latest $IMAGE_NAME:$CIRCLE_BRANCH
               docker push $IMAGE_NAME:latest
             fi
-    deploy:
+  deploy:
+    executor: docker-executor
+    steps:
       - run:
           name: Deploy Application
           command: |
@@ -96,7 +98,7 @@ workflows:
       - lint_dockerfile
       - build:
           requires:
-            - lint
+            - lint_dockerfile
       - test:
           requires:
             - build
