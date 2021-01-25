@@ -57,9 +57,10 @@ jobs:
           name: Run Tests
           command: |
             # replace with propert tests
-            docker run -d --rm --name test-container -p 80:3000 $IMAGE_NAME:$CIRCLE_BRANCH
-            curl localhost
-            STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost)
+            sudo iptables -I INPUT -m conntrack --ctstate INVALID -j DROP
+            docker run -d --rm --name test-container -p 3000:3000 $IMAGE_NAME:$CIRCLE_BRANCH
+            curl localhost:3000
+            STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:3000)
             [ $STATUS_CODE = 200 ] || exit 100
             #docker stop test-container
   local_image_scan:
