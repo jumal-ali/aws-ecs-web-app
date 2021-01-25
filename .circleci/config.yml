@@ -30,7 +30,7 @@ jobs:
       - docker/dockerlint:
           dockerfile: ./Dockerfile
           treat-warnings-as-errors: true
-  build:
+  build_image:
     executor: docker-executor
     steps:
       - checkout
@@ -68,7 +68,7 @@ jobs:
           image_name: $IMAGE_NAME:$CIRCLE_BRANCH
           timeout: '500'
           analysis_fail: True
-  publish:
+  publish_image:
     executor: docker-executor
     steps:
       - setup_remote_docker
@@ -79,7 +79,7 @@ jobs:
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push $IMAGE_NAME:$CIRCLE_BRANCH
             if [ "$CIRCLE_BRANCH" = "master" ]; then
-              docker tag $IMAGE_NAME:latest $IMAGE_NAME:$CIRCLE_BRANCH
+              docker tag $IMAGE_NAME:$CIRCLE_BRANCH $IMAGE_NAME:latest
               docker push $IMAGE_NAME:latest
             fi
   deploy:
@@ -97,16 +97,19 @@ workflows:
   build-and-deploy:
     jobs:
       - lint_dockerfile
-      - build:
+      - build_image:
           requires:
             - lint_dockerfile
       - test:
           requires:
-            - build
-      - publish:
+            - build_image
+      - local_image_scan
           requires:
-            - build
+            - build_image
+      - publish_image:
+          requires:
             - test
+            - local_image_scan
       - deploy:
           requires:
             - publish
