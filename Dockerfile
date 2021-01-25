@@ -13,7 +13,7 @@ FROM node:12-alpine
 
 LABEL author="Jumal Ali"
 
-RUN apk add --no-cache tini
+RUN apk add --no-cache tini curl
 
 WORKDIR /app
 
