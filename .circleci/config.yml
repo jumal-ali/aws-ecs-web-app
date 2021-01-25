@@ -46,23 +46,19 @@ jobs:
           paths:
             - ./image.tar
   test:
-    executor: docker/machine
-    #executor: docker-executor
-    environment:
-      IMAGE_NAME: jumal/superawesome-web-app
+    executor: docker-executor
     steps:
-      #- setup_remote_docker
+      - setup_remote_docker
       - load-cached-image
       - run:
           name: Run Tests
           command: |
-            # replace with propert tests
-            sudo iptables -I INPUT -m conntrack --ctstate INVALID -j DROP
+            # replace with propert tests in future
             docker run -d --rm --name test-container -p 3000:3000 $IMAGE_NAME:$CIRCLE_BRANCH
-            curl localhost:3000
-            STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost:3000)
+            STATUS_CODE=$(docker exec -u root web sh -c "
+                apk add curl --no-cache > /dev/null; 
+                curl -s -o /dev/null -w '%{http_code}' localhost:3000")
             [ $STATUS_CODE = 200 ] || exit 100
-            #docker stop test-container
   local_image_scan:
     executor: anchore/anchore_engine
     steps:
