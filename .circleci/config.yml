@@ -49,7 +49,7 @@ jobs:
     executor: docker/machine
     #executor: docker-executor
     steps:
-      - setup_remote_docker
+      #- setup_remote_docker
       - load-cached-image
       - run:
           name: Run Tests
