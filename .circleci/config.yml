@@ -48,6 +48,8 @@ jobs:
   test:
     executor: docker/machine
     #executor: docker-executor
+    environment:
+      IMAGE_NAME: jumal/superawesome-web-app
     steps:
       #- setup_remote_docker
       - load-cached-image
@@ -55,10 +57,10 @@ jobs:
           name: Run Tests
           command: |
             # replace with propert tests
-            echo "$IMAGE_NAME:$CIRCLE_BRANCH"
             docker run -d --rm --name test-container -p 80:3000 $IMAGE_NAME:$CIRCLE_BRANCH
             STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" localhost)
             [ $STATUS_CODE = 200 ] || exit 100
+            #docker stop test-container
   local_image_scan:
     executor: anchore/anchore_engine
     steps:
