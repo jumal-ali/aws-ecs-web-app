@@ -55,7 +55,7 @@ jobs:
           command: |
             # replace with propert tests in future
             docker run -d --rm --name test-container -p 3000:3000 $IMAGE_NAME:$CIRCLE_BRANCH
-            STATUS_CODE=$(docker exec -u root web sh -c "
+            STATUS_CODE=$(docker exec -u root test-container sh -c "
                 apk add curl --no-cache > /dev/null; 
                 curl -s -o /dev/null -w '%{http_code}' localhost:3000")
             [ $STATUS_CODE = 200 ] || exit 100
