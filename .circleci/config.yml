@@ -24,7 +24,7 @@ commands:
 # Define the jobs we want to run for this project
 jobs:
   lint_dockerfile:
-    executor: docker-executor
+    executor: docker/machine
     steps:
       - checkout
       - docker/dockerlint:
