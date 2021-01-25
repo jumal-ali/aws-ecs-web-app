@@ -30,7 +30,7 @@ jobs:
       - docker/dockerlint:
           dockerfile: ./Dockerfile
           treat-warnings-as-errors: true
-  build_image:
+  build:
     executor: docker-executor
     steps:
       - checkout
@@ -59,7 +59,7 @@ jobs:
                 apk add curl --no-cache > /dev/null; 
                 curl -s -o /dev/null -w '%{http_code}' localhost:3000")
             [ $STATUS_CODE = 200 ] || exit 100
-  local_image_scan:
+  scan_image:
     executor: anchore/anchore_engine
     steps:
       - setup_remote_docker
@@ -68,7 +68,7 @@ jobs:
           image_name: $IMAGE_NAME:$CIRCLE_BRANCH
           timeout: '500'
           analysis_fail: True
-  publish_image:
+  register_image:
     executor: docker-executor
     steps:
       - setup_remote_docker
@@ -97,19 +97,19 @@ workflows:
   build-and-deploy:
     jobs:
       - lint_dockerfile
-      - build_image:
+      - build:
           requires:
             - lint_dockerfile
       - test:
           requires:
-            - build_image
-      - local_image_scan:
+            - build
+      - scan_image
           requires:
-            - build_image
-      - publish_image:
+            - build
+      - register_image:
           requires:
             - test
-            - local_image_scan
+            - scan_image
       - deploy:
           requires:
-            - publish
+            - register_image
