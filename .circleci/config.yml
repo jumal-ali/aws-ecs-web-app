@@ -109,7 +109,6 @@ jobs:
             terraform import --var-file dev.tfvars \
                 aws_ecs_task_definition.web-app \
                 $(aws ecs list-task-definitions \
-                    --region=${AWS_DEFAULT_REGION}
                     --family-prefix="dev-web-app" --sort DESC --max-items=1 \
                     --status=Active | jq .taskDefinitionArns[0] -r )
       - run:
