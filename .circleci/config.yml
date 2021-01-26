@@ -90,6 +90,7 @@ jobs:
             mkdir -p ~/.local/bin/
             . ~/.profile
             ln -s ~/.tfenv/bin/* ~/.local/bin
+            cd deploy
             tfenv install
             terraform --version
       - run:
