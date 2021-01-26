@@ -96,7 +96,7 @@ jobs:
             ln -s ~/.tfenv/bin/* ~/.local/bin
             cd deploy
             tfenv install
-            tfvar use
+            tfenv use
             terraform --version
       - run:
           name: Pull Web Task Template
