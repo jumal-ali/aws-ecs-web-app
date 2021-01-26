@@ -14,7 +14,7 @@ app.use(morgan('combined'));
 
 // Routing
 app.get('/', (req, res) => {
-  res.send('<h1 style="color:green;">Hello World</h1>');
+  res.send('<h1 style="color:blue;">Hello World</h1>');
 });
 
 app.listen(PORT, HOST);
