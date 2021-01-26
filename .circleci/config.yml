@@ -10,8 +10,8 @@ executors:
       - image: cimg/base:2020.01
     environment:
       IMAGE_NAME: jumal/superawesome-web-app
-      AWS_ACCESS_KEY_ID: ${CI_BOT_AWS_SECRET}
-      AWS_SECRET_ACCESS_KEY: ${CI_BOT_ACCESS_KEY}
+      AWS_ACCESS_KEY_ID: $CI_BOT_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY: $CI_BOT_AWS_SECRET
       AWS_DEFAULT_REGION: eu-west-1
 
 commands:
