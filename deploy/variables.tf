@@ -32,3 +32,8 @@ variable "ecs-service" {
   type        = string
   description = "Name of the ecs service web-app is attached to"
 }
+
+variable "ecs-family" {
+  type        = string
+  description = "Name of the ecs task family name"
+}

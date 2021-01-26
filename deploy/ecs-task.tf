@@ -1,5 +1,5 @@
 locals {
-  service = "${var.env}-web-app"
+  service = "${var.env}-${var.family}"
 }
 
 resource "aws_ecs_task_definition" "web-app" {
@@ -16,7 +16,7 @@ resource "aws_ecs_task_definition" "web-app" {
   network_mode             = data.aws_ecs_task_definition.web-app.network_mode
   memory                   = data.aws_ecs_container_definition.web-app.memory
   cpu                      = data.aws_ecs_container_definition.web-app.cpu
-  execution_role_arn       = var.ecs-task-exec-role
+  execution_role_arn       = data.aws_iam_role.ecs-task-exec-role.arn
 
   tags = {
     Terraform   = "true"
@@ -46,9 +46,17 @@ data "aws_ecs_task_definition" "web-app" {
 
 data "aws_ecs_container_definition" "web-app" {
   task_definition = data.aws_ecs_task_definition.web-app.family
-  container_name  = "web-app"
+  container_name  = "${var.family}"
+}
+
+data "aws_iam_role" "ecs-task-exec-role" {
+  name = var.ecs-task-exec-role
 }
 
 output "latest-task-revision" {
   value = "${local.service}:${aws_ecs_task_definition.web-app.revision}"
+}
+
+output "deployed-image" {
+  value = "${var.container-image}:${var.container-tag}"
 }
