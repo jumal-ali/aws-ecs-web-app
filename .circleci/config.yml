@@ -10,9 +10,6 @@ executors:
       - image: cimg/base:2020.01
     environment:
       IMAGE_NAME: jumal/superawesome-web-app
-      AWS_ACCESS_KEY_ID: $CI_BOT_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY: $CI_BOT_AWS_SECRET
-      AWS_DEFAULT_REGION: eu-west-1
 
 commands:
   load-cached-image:
@@ -76,7 +73,13 @@ jobs:
   deploy:
     executor: docker-executor
     steps:
-      - checkout
+      - checkout      
+      - run:
+          name: Set up aws cred
+          command: |
+            export AWS_ACCESS_KEY_ID="${CI_BOT_ACCESS_KEY}"
+            export AWS_SECRET_ACCESS_KEY="${CI_BOT_AWS_SECRET}""
+            export AWS_DEFAULT_REGION="eu-west-1"
       - run:
           name: Install aws-cli
           command: |
