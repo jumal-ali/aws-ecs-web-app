@@ -33,8 +33,8 @@ resource "aws_ecs_task_definition" "web-app" {
 
 resource "null_resource" "update-service" {
   provisioner "local-exec" {
-    command     = "aws ecs update-service --task-definition=${local.service}:${aws_ecs_task_definition.web-app.revision} --cluster=${var.ecs-cluster} --service=${var.ecs-service} --region=eu-west-1"
-    interpreter = ["bash", "-c"]
+    command     = "./update-ecs-service.sh \"${var.ecs-cluster}\" \"${var.ecs-service}\" \"${local.service}:${aws_ecs_task_definition.web-app.revision}\""
+    interpreter = ["/bin/bash", "-c"]
   }
 
   depends_on = [aws_ecs_task_definition.web-app]
