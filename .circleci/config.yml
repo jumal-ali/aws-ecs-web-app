@@ -77,9 +77,9 @@ jobs:
       - run:
           name: Set up local environment variables for AWS
           command: |
-            export AWS_ACCESS_KEY_ID=${CI_BOT_ACCESS_KEY}
-            export AWS_SECRET_ACCESS_KEY=${CI_BOT_AWS_SECRET}
-            export AWS_DEFAULT_REGION=eu-west-1
+            export AWS_ACCESS_KEY_ID="${CI_BOT_ACCESS_KEY}"
+            export AWS_SECRET_ACCESS_KEY="${CI_BOT_AWS_SECRET}"
+            export AWS_DEFAULT_REGION="eu-west-1"
       - run:
           name: Install aws-cli
           command: |
@@ -109,9 +109,10 @@ jobs:
       - run:
           name: pull last revision
           command: |
-            terraform import --var-file dev.tfvars  \
+            terraform import --var-file dev.tfvars \
                 aws_ecs_task_definition.web-app \
                 $(aws ecs list-task-definitions \
+                    --region=${AWS_DEFAULT_REGION}
                     --family-prefix="dev-web-app" --sort DESC --max-items=1 \
                     --status=Active | jq .taskDefinitionArns[0] -r )
       - run:
