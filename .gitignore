@@ -1,0 +1,3 @@
+ecs-container-definitions
+deploy/.terraform/
+terraform.tfstate*

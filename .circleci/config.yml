@@ -8,6 +8,7 @@ executors:
   docker-executor:
     docker:
       - image: cimg/base:2020.01
+      - image: amazon/aws-cli:latest
     environment:
       IMAGE_NAME: jumal/superawesome-web-app
 
@@ -73,12 +74,50 @@ jobs:
   deploy:
     executor: docker-executor
     steps:
+      - checkout
       - run:
-          name: Deploy Application
+          name: Set up local environment variables for AWS
           command: |
-            # replace with propert tests
-            echo "TO DO"
-    
+            export AWS_ACCESS_KEY_ID=${CI_BOT_ACCESS_KEY}
+            export AWS_SECRET_ACCESS_KEY=${CI_BOT_AWS_SECRET}
+            export AWS_DEFAULT_REGION=eu-west-1
+          name: Install Terraform
+          command: |
+            git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+            echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
+            mkdir -p ~/.local/bin/
+            . ~/.profile
+            ln -s ~/.tfenv/bin/* ~/.local/bin
+            tfenv install
+            terraform --version
+      - run:
+          name: Pull Web Task Template
+          command: git@github.com:jumal-ali/ecs-container-definitions.git
+      - run:
+          name: Build Deployment
+          command: |
+            terraform init
+            terraform validate
+      - run:
+          name: pull last revision
+          command: |
+            terraform import --var-file dev.tfvars  \
+                aws_ecs_task_definition.web-app \
+                $(aws ecs list-task-definitions \
+                    --family-prefix="dev-web-app" --sort DESC --max-items=1 \
+                    --status=Active | jq .taskDefinitionArns[0] -r )
+      - run:
+          name: prepare deploy with latest image tag
+          command: |
+            terraform apply -no-color -input=false -var-file dev.tfvars \
+              --var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
+              --var container-tag=$CIRCLE_BRANCH
+            terraform plan -out=tfplan -input=false
+      - run:
+          name: deploy
+          command: |
+            terraform apply -input=false tfplan
+
 # Orchestrate our job run sequence
 workflows:
   version: 2
