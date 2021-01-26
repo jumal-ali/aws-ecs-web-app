@@ -46,7 +46,7 @@ data "aws_ecs_task_definition" "web-app" {
 
 data "aws_ecs_container_definition" "web-app" {
   task_definition = data.aws_ecs_task_definition.web-app.family
-  container_name  = "${var.ecs-family}"
+  container_name  = var.ecs-family
 }
 
 data "aws_iam_role" "ecs-task-exec-role" {
