@@ -56,7 +56,7 @@ jobs:
             docker run -d --rm --name test-container -p 3000:3000 $IMAGE_NAME:$CIRCLE_BRANCH
             STATUS_CODE=$(docker exec test-container curl -s -o /dev/null -w '%{http_code}' localhost:3000)
             [ $STATUS_CODE = 200 ] || exit 100
-  register_image:
+  publish_image:
     executor: docker-executor
     steps:
       - setup_remote_docker
@@ -74,6 +74,7 @@ jobs:
     executor: docker-executor
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Install aws-cli
           command: |
@@ -109,12 +110,8 @@ jobs:
       - run:
           name: pull last revision
           command: |
-            aws ecs list-task-definitions \
-                    --family-prefix="dev-web-app"  \
-                    --status=Active \
-                    --sort DESC \
-                    --max-items=1| jq .taskDefinitionArns[0] -r
-                    
+            ls -lA
+            pwd
             terraform import \
                 --var-file dev.tfvars \
                 --var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
@@ -151,12 +148,12 @@ workflows:
       - test:
           requires:
             - build
-      - register_image:
+      - publish_image:
           requires:
             - test
       - deploy:
           requires:
-            - register_image
+            - publish_image
           filters:
             branches:
               only:
