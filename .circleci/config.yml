@@ -125,13 +125,13 @@ jobs:
           name: prepare deploy with latest image tag
           command: |
             cd deploy
-            terraform apply \
+            terraform plan \
               -input=false \
+              -out=tfplan \
               -no-color \
               -var-file dev.tfvars \
               --var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
               --var container-tag=$CIRCLE_BRANCH
-            terraform plan -out=tfplan -input=false
       - run:
           name: deploy
           command: |
