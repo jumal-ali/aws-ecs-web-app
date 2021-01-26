@@ -113,8 +113,8 @@ jobs:
           command: |
             cd deploy
             terraform import \
-                --var-file dev.tfvars \
-                --var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
+                -var-file environments/dev.tfvars \
+                -var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
                 aws_ecs_task_definition.web-app \
                 $(aws ecs list-task-definitions \
                     --family-prefix="dev-web-app"  \
@@ -129,9 +129,9 @@ jobs:
               -input=false \
               -out=tfplan \
               -no-color \
-              -var-file dev.tfvars \
-              --var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
-              --var container-tag=$CIRCLE_BRANCH
+              -var-file environments/dev.tfvars \
+              -var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
+              -var container-tag=$CIRCLE_BRANCH
       - run:
           name: deploy
           command: |
