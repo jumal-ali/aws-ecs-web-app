@@ -106,6 +106,12 @@ jobs:
       - run:
           name: pull last revision
           command: |
+            aws ecs list-task-definitions \
+                    --family-prefix="dev-web-app"  \
+                    --status=Active \
+                    --sort DESC \
+                    --max-items=1| jq .taskDefinitionArns[0] -r
+                    
             terraform import \
                 --var-file dev.tfvars \
                 --var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
