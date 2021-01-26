@@ -9,6 +9,7 @@ executors:
     docker:
       - image: cimg/base:2020.01
       - image: amazon/aws-cli:latest
+        entrypoint: bash
     environment:
       IMAGE_NAME: jumal/superawesome-web-app
 
