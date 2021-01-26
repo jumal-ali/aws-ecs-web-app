@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "web-app" {
 
 resource "null_resource" "update-service" {
   provisioner "local-exec" {
-    command     = "./update-ecs-service.sh \"${var.ecs-cluster}\" \"${var.ecs-service}\" \"${local.service}:${aws_ecs_task_definition.web-app.revision}\""
+    command     = "tf-scripts/update-ecs-service.sh \"${var.ecs-cluster}\" \"${var.ecs-service}\" \"${local.service}:${aws_ecs_task_definition.web-app.revision}\""
     interpreter = ["/bin/bash", "-c"]
   }
 
