@@ -106,15 +106,22 @@ jobs:
       - run:
           name: pull last revision
           command: |
-            terraform import --var-file dev.tfvars \
+            terraform import \
+                --var-file dev.tfvars \
+                --var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
                 aws_ecs_task_definition.web-app \
                 $(aws ecs list-task-definitions \
-                    --family-prefix="dev-web-app" --sort DESC --max-items=1 \
-                    --status=Active | jq .taskDefinitionArns[0] -r )
+                    --family-prefix="dev-web-app"  \
+                    --status=Active \
+                    --sort DESC \
+                    --max-items=1| jq .taskDefinitionArns[0] -r )
       - run:
           name: prepare deploy with latest image tag
           command: |
-            terraform apply -no-color -input=false -var-file dev.tfvars \
+            terraform apply \
+              -input=false \
+              -no-color \
+              -var-file dev.tfvars \
               --var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
               --var container-tag=$CIRCLE_BRANCH
             terraform plan -out=tfplan -input=false
