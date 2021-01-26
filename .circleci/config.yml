@@ -98,7 +98,6 @@ jobs:
             cd deploy
             tfenv install
             tfenv use
-            terraform validate
             terraform --version
       - run:
           name: Pull Web Task Template
@@ -108,6 +107,7 @@ jobs:
           command: |
             cd deploy
             terraform init
+            terraform validate
       - run:
           name: pull last revision
           command: |
