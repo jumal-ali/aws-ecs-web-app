@@ -5,7 +5,7 @@
   "author": "Jumal Ali <jumal_2@yahoo.co.uk>",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node src/server.js"
   },
   "dependencies": {
     "express": "^4.16.1",
