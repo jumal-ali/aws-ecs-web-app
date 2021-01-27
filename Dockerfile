@@ -4,7 +4,7 @@ LABEL author="Jumal Ali"
 
 WORKDIR /build
 
-COPY package*.json .
+COPY package*.json ./
 RUN npm install && npm cache clean --force --loglevel=error
 
 # -----------------
