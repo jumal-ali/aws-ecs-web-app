@@ -89,11 +89,11 @@ jobs:
       - run:
           name: build new task definition
           command: |
-          # GRAB LAST ACTIVE TASK DEFINITION
-          #   REPLACE THE IMAGE TAG 
-          #   REMOVE UNWANTED ATTRIBUTES
-          #   STORE NEW DEFINITION
-          aws ecs describe-task-definition --task-definition "$TASK_NAME" | \
+            # GRAB LAST ACTIVE TASK DEFINITION
+            #   REPLACE THE IMAGE TAG 
+            #   REMOVE UNWANTED ATTRIBUTES
+            #   STORE NEW DEFINITION
+            aws ecs describe-task-definition --task-definition "$TASK_NAME" | \
               jq '(.taskDefinition | (.containerDefinitions[] | select(.image | contains("'"$IMAGE_NAME"'")))).image = "'"$IMAGE_NAME"':'"$CIRCLE_BRANCH"'"' | \
               jq '.taskDefinition | del( .compatibilities, .requiresAttributes, .revision, .taskDefinitionArn, .status )' \
               > new-task-definition.json
