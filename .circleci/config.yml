@@ -73,7 +73,6 @@ jobs:
   deploy:
     executor: docker-executor
     steps:
-      - checkout
       - setup_remote_docker
       - run:
           name: Install aws-cli
@@ -86,57 +85,24 @@ jobs:
           command: |
             aws configure set aws_access_key_id "${CI_BOT_AWS_ACCESS_KEY}"
             aws configure set aws_secret_access_key "${CI_BOT_AWS_SECRET_KEY}"
-            aws configure set default.region "eu-west-1"
+            aws configure set default.region "${AWS_REGION}"
       - run:
-          name: Install Terraform
+          name: build new task definition
           command: |
-            git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-            echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
-            mkdir -p ~/.local/bin/
-            . ~/.profile
-            ln -s ~/.tfenv/bin/* ~/.local/bin
-            cd deploy
-            tfenv install
-            tfenv use
-            terraform --version
+          # GRAB LAST ACTIVE TASK DEFINITION
+          #   REPLACE THE IMAGE TAG 
+          #   REMOVE UNWANTED ATTRIBUTES
+          #   STORE NEW DEFINITION
+          aws ecs describe-task-definition --task-definition "$TASK_NAME" | \
+              jq '(.taskDefinition | (.containerDefinitions[] | select(.image | contains("'"$IMAGE_NAME"'")))).image = "'"$IMAGE_NAME"':'"$CIRCLE_BRANCH"'"' | \
+              jq '.taskDefinition | del( .compatibilities, .requiresAttributes, .revision, .taskDefinitionArn, .status )' \
+              > new-task-definition.json
       - run:
-          name: Pull Web Task Template
-          command: git clone --depth 1 git@github.com:jumal-ali/ecs-container-definitions.git deploy/ecs-container-definitions
+          name: register new task definition
+          command: aws ecs register-task-definition --family $TASK_NAME --cli-input-json file://new-task-definiton.json
       - run:
-          name: Build Deployment
-          command: |
-            cd deploy
-            terraform init
-            terraform validate
-      - run:
-          name: pull last revision
-          command: |
-            cd deploy
-            terraform import \
-                -var-file environments/dev.tfvars \
-                -var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
-                aws_ecs_task_definition.web-app \
-                $(aws ecs list-task-definitions \
-                    --family-prefix="dev-web-app"  \
-                    --status=Active \
-                    --sort DESC \
-                    --max-items=1| jq .taskDefinitionArns[0] -r )
-      - run:
-          name: prepare deploy with latest image tag
-          command: |
-            cd deploy
-            terraform plan \
-              -input=false \
-              -out=tfplan \
-              -no-color \
-              -var-file environments/dev.tfvars \
-              -var "ecs-task-exec-role=$DEV_ECS_EXEC_TASK_ROLE" \
-              -var container-tag=$CIRCLE_BRANCH
-      - run:
-          name: deploy
-          command: |
-            cd deploy
-            terraform apply -input=false tfplan
+          name: update ecs service
+          command: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME
 
 # Orchestrate our job run sequence
 workflows:
