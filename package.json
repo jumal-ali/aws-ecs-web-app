@@ -5,10 +5,15 @@
   "author": "Jumal Ali <jumal_2@yahoo.co.uk>",
   "main": "server.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "lint": "eslint src/"
   },
   "dependencies": {
     "express": "^4.16.1",
     "morgan": "*"
+  },
+  "devDependencies": {
+    "eslint": "^7.18.0",
+    "eslint-config-strongloop": "^2.1.0"
   }
 }

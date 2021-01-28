@@ -1,0 +1,13 @@
+version: '3.7' # min required is v3.4
+services:
+  app:
+    image: node:12-alpine
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    entrypoint: 
+      - sh
+    volumes:
+      - ../:/app/
+    labels:
+      com.example.description: "Hello World App"
