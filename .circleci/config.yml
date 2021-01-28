@@ -10,6 +10,11 @@ executors:
       - image: cimg/base:2020.01
     environment:
       IMAGE_NAME: jumal/superawesome-web-app
+  alpine-executor:
+    docker:
+      - image: alpine:3.13.0
+    environment:
+      IMAGE_NAME: jumal/superawesome-web-app
 
 commands:
   load-cached-image:
@@ -71,9 +76,13 @@ jobs:
               docker push $IMAGE_NAME:latest
             fi
   deploy:
-    executor: docker-executor
+    executor: alpine-executor
     steps:
       - setup_remote_docker
+      - run:
+          name: Install aws and jq
+          command: |
+            apk add jq aws-cli --no-cache
       - run:
           name: Install aws-cli
           command: |
