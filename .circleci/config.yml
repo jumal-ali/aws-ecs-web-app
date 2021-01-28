@@ -8,9 +8,13 @@ executors:
   docker-executor:
     docker:
       - image: cimg/base:2020.01
+    environment:
+      IMAGE_NAME: jumal/superawesome-web-app
   alpine-executor:
     docker:
       - image: alpine:3.13.0
+    environment:
+      IMAGE_NAME: jumal/superawesome-web-app
 
 commands:
   load-cached-image:
@@ -107,8 +111,6 @@ jobs:
 workflows:
   version: 2
   build-and-deploy:
-    environment:
-      IMAGE_NAME: jumal/superawesome-web-app
     jobs:
       - lint_dockerfile
       - build:
