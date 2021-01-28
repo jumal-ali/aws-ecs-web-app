@@ -102,7 +102,7 @@ jobs:
               > new-task-definition.json
       - run:
           name: register new task definition
-          command: aws ecs register-task-definition --family $TASK_NAME --cli-input-json file://new-task-definiton.json
+          command: aws ecs register-task-definition --family $TASK_NAME --cli-input-json file://new-task-definition.json
       - run:
           name: update ecs service
           command: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME
