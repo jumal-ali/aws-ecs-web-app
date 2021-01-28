@@ -41,10 +41,10 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build Docker image
-          command: docker build -t $IMAGE_NAME:$CIRCLE_BRANCH .
+          command: docker build -t "$IMAGE_NAME:$CIRCLE_BRANCH" .
       - run:
           name: Archive Docker image
-          command: docker save -o image.tar $IMAGE_NAME:$CIRCLE_BRANCH
+          command: docker save -o image.tar "$IMAGE_NAME:$CIRCLE_BRANCH"
       - persist_to_workspace:
           root: .
           paths:
@@ -58,9 +58,9 @@ jobs:
           name: Run Tests
           command: |
             # replace with propert tests in future
-            docker run -d --rm --name test-container -p 3000:3000 $IMAGE_NAME:$CIRCLE_BRANCH
+            docker run -d --rm --name test-container -p 3000:3000 "$IMAGE_NAME:$CIRCLE_BRANCH"
             STATUS_CODE=$(docker exec test-container curl -s -o /dev/null -w '%{http_code}' localhost:3000)
-            [ $STATUS_CODE = 200 ] || exit 100
+            [ "$STATUS_CODE" = 200 ] || exit 100
   publish_image:
     executor: docker-executor
     steps:
@@ -70,10 +70,10 @@ jobs:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push $IMAGE_NAME:$CIRCLE_BRANCH
+            docker push "$IMAGE_NAME:$CIRCLE_BRANCH"
             if [ "$CIRCLE_BRANCH" = "master" ]; then
-              docker tag $IMAGE_NAME:$CIRCLE_BRANCH $IMAGE_NAME:latest
-              docker push $IMAGE_NAME:latest
+              docker tag "$IMAGE_NAME:$CIRCLE_BRANCH" "$IMAGE_NAME:latest"
+              docker push "$IMAGE_NAME:latest"
             fi
   deploy:
     executor: alpine-executor
@@ -86,9 +86,9 @@ jobs:
       - run:
           name: Set up aws cred
           command: |
-            aws configure set aws_access_key_id "${CI_BOT_AWS_ACCESS_KEY}"
-            aws configure set aws_secret_access_key "${CI_BOT_AWS_SECRET_KEY}"
-            aws configure set default.region "${AWS_REGION}"
+            aws configure set aws_access_key_id "$CI_BOT_AWS_ACCESS_KEY"
+            aws configure set aws_secret_access_key "$CI_BOT_AWS_SECRET_KEY"
+            aws configure set default.region "$AWS_REGION"
       - run:
           name: build new task definition
           command: |
@@ -102,10 +102,10 @@ jobs:
               > new-task-definition.json
       - run:
           name: register new task definition
-          command: aws ecs register-task-definition --family $TASK_NAME --cli-input-json file://new-task-definition.json
+          command: aws ecs register-task-definition --family "$TASK_NAME" --cli-input-json file://new-task-definition.json
       - run:
           name: update ecs service
-          command: aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_NAME
+          command: aws ecs update-service --cluster "$CLUSTER_NAME" --service "$SERVICE_NAME" --task-definition "$TASK_NAME" --force-new-deployment --query "service.taskDefinition" --output text
 
 # Orchestrate our job run sequence
 workflows:
