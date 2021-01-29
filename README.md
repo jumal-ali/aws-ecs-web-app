@@ -1,5 +1,5 @@
 # aws-ecs-web-app
-[![jumal-ali](https://circleci.com/gh/jumal-ali/aws-ecs-web-app.svg?style=shield)](https://app.circleci.com/pipelines/github/jumal-ali/aws-ecs-terraform)
+[![jumal-ali](https://circleci.com/gh/jumal-ali/aws-ecs-web-app.svg?style=shield)](https://app.circleci.com/pipelines/github/jumal-ali/aws-ecs-web-app)
 
 A Simple Hello World App Written in NodeJS
 
