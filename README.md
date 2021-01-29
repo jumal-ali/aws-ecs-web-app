@@ -24,7 +24,7 @@ then visit: http://localhost/3000 from your browser
 make start-dev-env
 ```
 
-## Run Lint
+## Lint
 
 This application uses eslint package
 
