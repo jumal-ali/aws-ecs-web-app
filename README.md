@@ -3,7 +3,7 @@
 
 A Simple Hello World App Written in NodeJS
 
-The application returns a simple "Hello World" message to the browser 
+The application returns a simple "Hello World" response
 
 Logs are sent to stdout in http access log format
 
@@ -24,7 +24,7 @@ then visit: http://localhost/3000 from your browser
 make start-dev-env
 ```
 
-## Lint
+## Lint changes
 
 This application uses eslint package
 
