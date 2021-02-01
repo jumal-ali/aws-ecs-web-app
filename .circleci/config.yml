@@ -38,6 +38,19 @@ jobs:
       - run:
           name: lint
           command: npm run lint
+  run_unit_tests:
+    docker:
+      - image: node:12-alpine
+    steps:
+      - checkout
+      - run:
+          name: intall dependencies
+          command: npm i --dev 
+      - run:
+          name: run unit tests
+          command: |
+            echo "Still to be implemented"
+            # npm run tests
   lint_dockerfile:
     executor: docker/machine
     steps:
@@ -60,7 +73,7 @@ jobs:
           root: .
           paths:
             - ./image.tar
-  test:
+  run_functional_tests:
     executor: docker-executor
     steps:
       - setup_remote_docker
@@ -125,16 +138,19 @@ workflows:
     jobs:
       - lint-app
       - lint_dockerfile
-      - build:
+      - run_unit_tests:
           requires:
             - lint-app
+      - build:
+          requires:
             - lint_dockerfile
-      - test:
+            - run_unit_tests
+      - run_functional_tests:
           requires:
             - build
       - publish_image:
           requires:
-            - test
+            - run_functional_tests
       - deploy:
           requires:
             - publish_image
